@@ -1,0 +1,1 @@
+go run -p 1 nazwaProgramu
