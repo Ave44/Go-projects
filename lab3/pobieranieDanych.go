@@ -32,6 +32,8 @@ func main() {
 	suma := liczba1 + liczba2
 	fmt.Println("Liczby to", liczba1, "i", liczba2)
 	fmt.Println("Suma", suma)
+
+	// to już nie jest związane z programem, niemniej ciekawe
 	fmt.Println(len(os.Args))
 	fmt.Println(os.Args)
 }
