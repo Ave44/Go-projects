@@ -88,7 +88,7 @@ func main() {
 		"ł": "Postrach goblinów",
 		"m": "Niesłusznie oskarżony",
 		"n": "Nie z tego świata",
-		"o": "Tańczący na kurchanach wrogów",
+		"o": "Tańczący na kurhanach wrogów",
 		"p": "Bochater z pod Waterloo",
 		"r": "Knujący spiski",
 		"s": "Następca tronu",
