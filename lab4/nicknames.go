@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"strings"
 )
 
 func main() {
@@ -34,45 +35,71 @@ func main() {
 		fmt.Scan(&dzień)
 	}
 
-	fmt.Println(imie, nazwisko, dzień)
+	imieLitera := strings.ToLower(imie[:1])
+	nazwiskoLitera := strings.ToLower(nazwisko[:1])
+	tablicaDni := [31]string{ // przymiotnik
+		"Szybki", "Jednoręki", "Bystry", "Przyczjony", "Wszechwidzący", "Hardy", "Cichy", "Pierwszy", "Żelaznoręki", "Zwinny",
+		"Zielonoki", "Rudy", "Trwały", "Wolny", "Szary", "Czarny", "Głośny", "Biały", "Wielki", "Mały",
+		"Przeklęty", "Ślepy", "Chrobry", "Złoty", "Blady", "Pomylony", "Szalony", "Cwany", "Ślepy", "Łysy",
+		"Ostatni"}
 
-	imieLitera := imie[:1]
-	nazwiskoLitera := nazwisko[:1]
-	tablicaDni := [31]string{
-		"szybki","jednoręki","bystry","przyczjony","wszechwidzący","hardy","cichy","pierwszy","żelaznoręki","zwinny",
-		"zielonoki","rudy","trwały","wolny","szary","czarny","głośny","biały","wielki","mały",
-		"przeklęty","ślepy","chrobry","złoty","blady","pomylony","szalony","cwany","ślepy","łysy",
-		"ostatni"}
+	mapaImion := map[string]string{ // rzeczownik
+		"a": "Anioł",
+		"b": "Baron",
+		"c": "Cesaż",
+		"d": "Dyktator",
+		"e": "Elizjanin",
+		"f": "Fabryator",
+		"g": "Gracz",
+		"h": "Hohlik", // poprawnie pisze się Chohlik ale tu umyślnie dałem niepoprawną wersję
+		"i": "Indyk",
+		"j": "Jaguar",
+		"k": "Kapłan",
+		"l": "Lord",
+		"ł": "Łotr",
+		"m": "Maruder",
+		"n": "Nożownik",
+		"o": "Opiekun",
+		"p": "Płomień",
+		"r": "Ryceż",
+		"s": "Smok",
+		"t": "Trep",
+		"u": "Uciekinier",
+		"w": "Wieśniak",
+		"x": "Kżyżowiec",
+		"y": "Yeti",
+		"z": "Zdrajca",
+		"ź": "Kłamca",
+		"ż": "Żniwiaż"}
 
-	mapaImion = map[string]string{
-		"a":"",
-		"b":"",
-		"c":"",
-		"d":"",
-		"e":"",
-		"f":"",
-		"g":"",
-		"h":"",
-		"i":"",
-		"j":"",
-		"k":"",
-		"l":"",
-		"ł":"",
-		"m":"",
-		"n":"",
-		"o":"",
-		"p":"",
-		"r":"",
-		"s":"",
-		"t":"",
-		"u":"",
-		"w":"",
-		"x":"",
-		"y":"",
-		"z":"",
-		"ź":"",
-		"ż":""
-	}
+	mapaNazwisk := map[string]string{ // przydomek
+		"a": "Co okrążył ziemię",
+		"b": "Kapłan prawdy",
+		"c": "Na wieczność wygnany",
+		"d": "Dziecie lasu",
+		"e": "Wybaca z Salobaru",
+		"f": "Co pokonał hydrę",
+		"g": "Przyciągający pecha",
+		"h": "Z pod góry Targon",
+		"i": "Nenkany przez cienie",
+		"j": "Wiecznie wracający",
+		"k": "Wysłannik niebios",
+		"l": "Syn wiedźmy",
+		"ł": "Postrach goblinów",
+		"m": "Niesłusznie oskarżony",
+		"n": "Nie z tego świata",
+		"o": "Tańczący na kurchanach wrogów",
+		"p": "Bochater z pod Waterloo",
+		"r": "Knujący spiski",
+		"s": "Następca tronu",
+		"t": "Poddany diabła",
+		"u": "Innowator Raskanpolu",
+		"w": "Co stracił oko",
+		"x": "Co przetrwał atak Tarkian",
+		"y": "Przybysz z Północy",
+		"z": "Co uciekł przed śmiercią",
+		"ź": "Przybysz z Południa",
+		"ż": "Wybraniec niebois"}
 
-	fmt.Println(imieLitera, nazwiskoLitera, tablicaDni[dzień-1])
+	fmt.Println(tablicaDni[dzień-1], mapaImion[imieLitera], mapaNazwisk[nazwiskoLitera])
 }
