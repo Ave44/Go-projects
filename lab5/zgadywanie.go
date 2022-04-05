@@ -70,7 +70,7 @@ func game(results map[string]BestResult) {
 
 MainLoop:
 	for play {
-		randNum := getRandomNumber(0, 5)
+		randNum := getRandomNumber(0, 1000)
 		player := getPlayerName()
 		liczba, continueGame := getUserNumber("Podaj liczbę od 0 do 1000: ")
 		if !continueGame {
