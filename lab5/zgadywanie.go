@@ -3,10 +3,18 @@ package main
 import (
 	"fmt"
 	"math/rand"
+	"os"
 	"sort"
 	"strconv"
+	"strings"
 	"time"
 )
+
+type BestResult struct {
+	guessCount int
+	date       string
+	randNum    int
+}
 
 func getPlayerName() string {
 	name := ""
@@ -57,7 +65,7 @@ func victory(player string, guessCount int, num int) bool {
 	return false
 }
 
-func game(results map[string]int) {
+func game(results map[string]BestResult) {
 	play := true
 
 MainLoop:
@@ -83,8 +91,15 @@ MainLoop:
 		}
 
 		record, includes := results[player]
-		if !includes || record > guessCount {
-			results[player] = guessCount
+		if !includes || record.guessCount > guessCount {
+			if record.guessCount > guessCount {
+				fmt.Print("Gratulacje ", player, " udało ci się pobić swój rekord!\n")
+			}
+			var res BestResult
+			res.guessCount = guessCount
+			res.date = time.Now().Format("02.01.2006")
+			res.randNum = randNum
+			results[player] = res
 		}
 		play = victory(player, guessCount, randNum)
 	}
@@ -92,8 +107,35 @@ MainLoop:
 	fmt.Print("Dziękuję za grę!\n")
 }
 
+func writeToFile(log string) {
+	file, err := os.Create("logs.txt")
+	if err != nil {
+		return
+	}
+	defer file.Close()
+
+	file.WriteString(log)
+}
+
+func getResults() map[string]BestResult {
+	results := make(map[string]BestResult)
+	logs, err := os.ReadFile("logs.txt")
+	if err == nil {
+		text := fmt.Sprintf("%s", logs)
+		table := strings.Fields(text)
+		for i := 0; i < len(table); i += 4 {
+			var res BestResult
+			res.guessCount, _ = strconv.Atoi(table[i+1])
+			res.date = table[i+2]
+			res.randNum, _ = strconv.Atoi(table[i+3])
+			results[table[i]] = res
+		}
+	}
+	return results
+}
+
 func main() {
-	results := make(map[string]int)
+	results := getResults()
 
 	game(results)
 
@@ -105,10 +147,19 @@ func main() {
 	}
 
 	sort.Slice(hallOfFame, func(i, j int) bool {
-		return results[hallOfFame[i]] < results[hallOfFame[j]]
+		return results[hallOfFame[i]].guessCount < results[hallOfFame[j]].guessCount
 	})
 
+	log := ""
+
 	for _, name := range hallOfFame {
-		fmt.Print(name, "\t", results[name], "\n")
+		row := fmt.Sprintf("%-10v %-3v %v %v\n", name, results[name].guessCount, results[name].date, results[name].randNum)
+		if len(name) > 10 {
+			row = fmt.Sprintf("%-10v %-3v %v %v\n", name[:9], results[name].guessCount, results[name].date, results[name].randNum)
+		}
+		fmt.Print(row)
+		log += row
 	}
+
+	writeToFile(log)
 }
