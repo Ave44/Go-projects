@@ -32,6 +32,24 @@ type Leaf struct {
 	y int
 }
 
+func createMap(width int, hight int) Map {
+	var simMap Map
+	fields := make(map[string]Field)
+
+	simMap.width = width
+	simMap.hight = hight
+
+	for i := 0; i < simMap.width; i++ {
+		for j := 0; j < simMap.hight; j++ {
+			coordinate := strconv.Itoa(i) + "." + strconv.Itoa(j)
+			fields[coordinate] = Field{}
+		}
+	}
+	simMap.fields = fields
+
+	return simMap
+}
+
 func (simMap Map) draw() {
 	for i := 0; i < simMap.hight; i++ {
 		for j := 0; j < simMap.width; j++ {
@@ -59,6 +77,30 @@ func drawField(f Field) {
 	} else {
 		fmt.Print(string("\033[37m"), "░░░ ")
 	}
+}
+
+func spawnAnts(simMap Map, antAmount int) []Ant {
+	ants := make([]Ant, antAmount)
+
+	// ustawienie "defaultowych wartości" to pozwala mi na zespawnowanie mrówki na polu 0.0
+	for i := range ants {
+		ants[i].x = -1
+		ants[i].y = -1
+	}
+
+	for i := 0; i < antAmount; i++ {
+		coordinate := getNewRandAntPosition(simMap, ants)
+		x, y := getCoordinates(coordinate)
+
+		// zmiana wartości pola w mapie
+		if value, ok := simMap.fields[coordinate]; ok {
+			value.ant = true
+			simMap.fields[coordinate] = value
+		}
+		ants[i] = Ant{x: x, y: y}
+	}
+
+	return ants
 }
 
 func getNewRandAntPosition(m Map, ants []Ant) string {
@@ -96,6 +138,30 @@ func getCoordinates(s string) (int, int) {
 	x, _ := strconv.Atoi(arr[0])
 	y, _ := strconv.Atoi(arr[1])
 	return x, y
+}
+
+func spawnLeafs(simMap Map, leafAmount int) []Leaf {
+	leafs := make([]Leaf, leafAmount)
+
+	// ustawienie "defaultowych wartości" to pozwala mi na zespawnowanie liścia na polu 0.0
+	for i := range leafs {
+		leafs[i].x = -1
+		leafs[i].y = -1
+	}
+
+	for i := 0; i < leafAmount; i++ {
+		coordinate := getNewRandLeafPosition(simMap, leafs)
+		x, y := getCoordinates(coordinate)
+
+		// zmiana wartości pola w mapie
+		if value, ok := simMap.fields[coordinate]; ok {
+			value.leaf = true
+			simMap.fields[coordinate] = value
+		}
+		leafs[i] = Leaf{x: x, y: y}
+	}
+
+	return leafs
 }
 
 func getNewRandLeafPosition(m Map, leafs []Leaf) string {
@@ -169,75 +235,30 @@ func moveIfCan(ant Ant, d int, simMap Map, antIndex int) Ant {
 	return ant
 }
 
-func main() {
-
-	///// inicjalizacja mapy /////
-	var simMap Map
-	fields := make(map[string]Field)
-
-	simMap.width = 10
-	simMap.hight = 5
-
-	for i := 0; i < simMap.width; i++ {
-		for j := 0; j < simMap.hight; j++ {
-			coordinate := strconv.Itoa(i) + "." + strconv.Itoa(j)
-			fields[coordinate] = Field{}
-		}
-	}
-	simMap.fields = fields
-
-	///// inicjalizacja mrówek /////
-	antAmount := 3
-	ants := make([]Ant, antAmount)
-
-	// ustawienie "defaultowych wartości" to pozwala mi na zespawnowanie mrówki na polu 0.0
-	for i := range ants {
-		ants[i].x = -1
-		ants[i].y = -1
-	}
-
-	for i := 0; i < antAmount; i++ {
-		coordinate := getNewRandAntPosition(simMap, ants)
-		x, y := getCoordinates(coordinate)
-
-		// zmiana wartości pola w mapie
-		if value, ok := simMap.fields[coordinate]; ok {
-			value.ant = true
-			simMap.fields[coordinate] = value
-		}
-		ants[i] = Ant{x: x, y: y}
-	}
-
-	simMap.ants = ants
-
-	///// inicjalizacja liści /////
-	leafAmount := 4
-	leafs := make([]Leaf, leafAmount)
-
-	// ustawienie "defaultowych wartości" to pozwala mi na zespawnowanie liścia na polu 0.0
-	for i := range leafs {
-		leafs[i].x = -1
-		leafs[i].y = -1
-	}
-
-	for i := 0; i < leafAmount; i++ {
-		coordinate := getNewRandLeafPosition(simMap, leafs)
-		x, y := getCoordinates(coordinate)
-
-		// zmiana wartości pola w mapie
-		if value, ok := simMap.fields[coordinate]; ok {
-			value.leaf = true
-			simMap.fields[coordinate] = value
-		}
-		leafs[i] = Leaf{x: x, y: y}
-	}
-
-	simMap.leafs = leafs
-
+func simulate(simMap Map, iterations int, delay int) {
+	fmt.Print("\033[H\033[2J")
 	simMap.draw()
-	for i := 0; i < 50; i++ {
-		time.Sleep(200 * time.Millisecond)
+	for i := 0; i < iterations; i++ {
+		time.Sleep(time.Duration(delay) * time.Millisecond)
 		simMap.tick()
 	}
+}
+
+func main() {
+
+	// inicjalizacja mapy
+	width, hight := 10, 5
+	simMap := createMap(width, hight)
+
+	// inicjalizacja mrówek
+	antAmount := 4
+	simMap.ants = spawnAnts(simMap, antAmount)
+
+	// inicjalizacja liści
+	leafAmount := 8
+	simMap.leafs = spawnLeafs(simMap, leafAmount)
+
+	// symulacja (mapa, iteracje, szybkość wyświetlania)
+	simulate(simMap, 20, 200)
 
 }
