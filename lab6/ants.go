@@ -229,6 +229,32 @@ func moveIfCan(ant Ant, d int, simMap Map, antIndex int) Ant {
 			value.ant = true
 			simMap.fields[newCoordinates] = value
 		}
+		// logika przenoszenia liści
+		if !ant.haveLeaf && simMap.fields[newCoordinates].leaf {
+			ant.haveLeaf = true
+		} else if ant.haveLeaf && simMap.fields[newCoordinates].leaf {
+			ant.haveLeaf = false
+		} else if ant.haveLeaf {
+			if value, ok := simMap.fields[oldCoordinates]; ok {
+				value.leaf = false
+				simMap.fields[oldCoordinates] = value
+			}
+			if value, ok := simMap.fields[newCoordinates]; ok {
+				value.leaf = true
+				simMap.fields[newCoordinates] = value
+			}
+
+			length := len(simMap.leafs)
+			xOld, yOld := getCoordinates(newCoordinates)
+			for i := 0; i < length; i++ {
+				if simMap.leafs[i].x == xOld && simMap.leafs[i].y == yOld {
+					simMap.leafs[i].x = x
+					simMap.leafs[i].y = y
+					break
+				}
+			}
+
+		}
 		simMap.ants[antIndex] = ant
 	}
 
@@ -247,18 +273,18 @@ func simulate(simMap Map, iterations int, delay int) {
 func main() {
 
 	// inicjalizacja mapy
-	width, hight := 10, 5
+	width, hight := 30, 10
 	simMap := createMap(width, hight)
 
 	// inicjalizacja mrówek
-	antAmount := 4
+	antAmount := 10
 	simMap.ants = spawnAnts(simMap, antAmount)
 
 	// inicjalizacja liści
-	leafAmount := 8
+	leafAmount := 30
 	simMap.leafs = spawnLeafs(simMap, leafAmount)
 
 	// symulacja (mapa, iteracje, szybkość wyświetlania)
-	simulate(simMap, 20, 200)
+	simulate(simMap, 1000, 10)
 
 }
